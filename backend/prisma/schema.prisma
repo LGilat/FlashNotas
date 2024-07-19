@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String  @unique
+  email     String  @unique
+  password  String
+  fecha_registro DateTime
+  notas          Nota[]
+  categorias     Categoria[]
+  roles          RolUsuario[]
+
+}
+
+model Rol {
+  id    Int      @id @default(autoincrement())
+  rol   String
+  descripcion String
+  usuarios RolUsuario[]
+}
+
+model RolUsuario {
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+  rol       Rol     @relation(fields: [rolId], references: [id])
+  rolId     Int
+
+  @@id([usuarioId, rolId])
+}
+
+model Categoria{
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  descripcion String
+  usuarioId Int 
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id]) 
+  fecha_creacion DateTime
+  notas Nota[]
+}
+
+model Nota {
+  id        Int      @id @default(autoincrement())
+  titulo    String
+  contenido String
+  categoria   Categoria  @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id]) 
+  usuarioId Int
+  fecha_creacion DateTime
+  fecha_ultima_modificacion DateTime
+
+}

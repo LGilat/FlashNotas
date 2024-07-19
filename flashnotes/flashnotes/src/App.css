@@ -1,0 +1,106 @@
+#root {
+    width: 1800px;
+  --bg-color: #fcfcfc;
+  --second-bg-color: #fff4f4;
+  --text-color: black;
+  --main-color: #cc0000;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  margin-bottom: 5rem;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 3rem;
+  font-weight: 800;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.2);
+}
+
+span {
+  color: var(--main-color);
+}
+
+
+
+#menu-icon {
+  font-size: 3.6rem;
+}
+
+.navigation {
+  margin-right: 18rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.navigation a {
+  font-size: 1.8rem;
+  color: black;
+  transition: 0.3s ease;
+  margin-left: 4rem;
+  border-bottom: 3px solid transparent;
+}
+
+.navigation a:hover,
+.navigation a.active {
+  color: var(--main-color);
+  border-bottom: 3px solid var(--main-color);
+}
+
+
+.input-textbox{
+  width: 100%;
+  padding: 1em;
+  margin-bottom: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: box-shadow 300ms;
+}
+
+.form-register{
+  margin-top: 2em;
+  text-align: right;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding:  2em;
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
