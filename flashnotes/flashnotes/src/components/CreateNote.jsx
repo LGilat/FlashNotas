@@ -40,6 +40,15 @@ const styles = {
         borderRadius: '4px',
         padding: '2em',
         textAlign: 'center',
+    },
+    textbox: {
+        width: '100%',
+        padding: '12px 20px',
+        margin: '8px 0',
+        display: 'inline-block',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        boxSizing: 'border-box',
     }
 
 };
@@ -48,11 +57,10 @@ const styles = {
 
 
 
-
 const CreateNote = () => {
-    const { user } = React.useContext(SessionContext);
+    const { user, token } = React.useContext(SessionContext);
 
-    if ( !user) {
+    if ( !user || !token ) {
         return ( 
             <div style={styles.warning}>
                 No tienes permiso para acceder a esta página
@@ -80,11 +88,11 @@ const CreateNote = () => {
             >
                 {({ isSubmitting }) => (
                     <Form style={styles.formregister}>
-                        <Field type="text" name="titulo" placeholder="Titulo" />
+                        <Field type="text" name="titulo" placeholder="Titulo"  style={styles.textbox} />
                         <ErrorMessage name="titulo" component="div" />
-                        <Field type="text" name="contenido" placeholder="Contenido" />
+                        <Field type="text" name="contenido" placeholder="Contenido" style={styles.textbox} />
                         <ErrorMessage name="contenido" component="div" />
-                        <Field type="date" name="fecha_creacion" placeholder="Fecha de Creación" />
+                        <Field type="date" name="fecha_creacion" placeholder="Fecha de Creación" style={styles.textbox} />
                         <ErrorMessage name="fecha_creacion" component="div" />
                         <button type="submit" disabled={isSubmitting}>
                             Crear Nota

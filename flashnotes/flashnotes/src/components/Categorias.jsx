@@ -1,23 +1,18 @@
-import React, { useContext, useEffect } from 'react';
-import UserDataCreate from './UserDataCreate';
-import {  useNavigate, Link } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { SessionContext } from '../Context/SessionContext';
 import * as Yup from 'yup';
-import '../css/register.css';
+
 
 const UserSchema = Yup.object().shape({
     nombre: Yup.string()
         .min(2, 'Too Short!')
         .max(50, 'Too Long!')
         .required('Required'),
-    email: Yup.string()
-        .email('Invalid email')
-        .required('Required'),
-    password: Yup.string()
-        .min(8, 'Password must be at least 8 characters')
+    descripcion: Yup.string()
+        .min(4, 'Password must be at least 8 characters')
         .required('Required'),
 });
+
 
 const styles = {
     container: {
@@ -37,50 +32,74 @@ const styles = {
         border: '1px solid #ccc',
         borderRadius: '4px',
         padding: '2em',
+    },
+    successMessage: {
+        color: 'green',
+        fontWeight: 'bold',
+        marginTop: '10px',
+    },
+    errorMessage: {
+        color: 'red',
+        fontWeight: 'bold',
+        marginTop: '10px',
     }
 
 };
 
 
 
-const UserRegistrationForm = () => {
-    const [userData, setUserData] = React.useState(null);
-    const { user, setUser } = useContext(SessionContext);
-    const navigate = useNavigate();
+
+
+const Categorias = () => {
+    const [userAdmin, setUserAdmin] = useState(null);
+    const [ successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        if (user) {
-            navigate('/');
+        const storedAdminData = sessionStorage.getItem('adminData');
+        if (storedAdminData) {
+            setUserAdmin(JSON.parse(storedAdminData));
         }
-    }, [user, navigate]);
+    }, []); 
+
 
     return (
         <>
-            
-            { !user && (
+            <h1>Categorias</h1>
+            { !userAdmin && <p> Necesita ser usuario y administrador para poder ingresar categorias</p> }
+            { userAdmin && userAdmin.rol === 'admin' && 
                 <>
+                    <p> Usuario y administrador </p> 
                     <div style={styles.formregister}>
                         <Formik
                             initialValues={{
                                 nombre: '',
-                                email: '',
-                                password: '',
+                                descripcion: '',
+                                username: userAdmin.nombre,
                             }}
                             validationSchema={UserSchema}
-                            onSubmit={(values, { setSubmitting }) => {
-                                fetch('http://localhost:3000/signup', {
+                            onSubmit={(values, { setSubmitting, resetForm }) => {
+                                fetch('http://localhost:3000/categorias', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${userAdmin.token}`,
                                     },
                                     body: JSON.stringify(values),
                                 })
                                     .then(response => response.json())
                                     .then((data) => {
-                                        console.log('Success data:', data);
-                                       
-                                        if (data.usuario) {
-                                            setUserData(data.usuario);
+                                        console.log('data: ', data);
+                                        if (data.ok) {
+                                            console.log('Success data:', data);
+                                            setSuccessMessage(data.mensaje);
+                                            resetForm();
+                                            setTimeout(() => setSuccessMessage(''), 3000); 
+                                        }
+                                        else{
+                                            console.log('Error data: ', data);
+                                            setErrorMessage(data.mensaje);
+                                            setTimeout(() => setErrorMessage(''), 3000);
                                         }
                                         setSubmitting(false);
                                     })
@@ -98,38 +117,31 @@ const UserRegistrationForm = () => {
                                     </div>
 
                                     <div>
-                                        <Field type="email" name="email" placeholder="Email" className="input-textbox" />
+                                        <Field type="text" name="descripcion" placeholder="descripcion" className="input-textbox" />
                                         <ErrorMessage name="email" component="div" />
                                     </div>
 
-                                    <div>
-                                        <Field type="password" name="password" placeholder="Password" className="input-textbox" />
-                                        <ErrorMessage name="password" component="div" />
-                                    </div>
+                                    
 
                                     <button type="submit" disabled={isSubmitting}>
-                                        Register
+                                        Add Rol
                                     </button>
                                 </Form>
                             )}
                         </Formik>
                     </div>
-                    <div style={styles.container}>
-                        { !userData && <p> Already have account <Link to="/login">Login in here</Link> </p>}
-                    </div>
-                    <div style={userData && styles.userdata}>
-                        {userData && <UserDataCreate userdata={userData} />}
-                        {userData &&
-                            <p>
-                                Already have an account? 
-                                <Link to="/login">Log in here</Link>
-                            </p>
-                        }
-                    </div>
                 </>
-            )}
+            
+            }
+            
+            {successMessage && <div style={styles.successMessage}>{successMessage}</div>}
+            {errorMessage && <div style={styles.errorMessage}>{errorMessage}</div>}
+        
         </>
-    )
+
+    );
+
 }
 
-export default UserRegistrationForm;
+
+export default Categorias;

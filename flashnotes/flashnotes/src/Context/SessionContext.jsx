@@ -19,7 +19,9 @@ const SessionProvider = ({ children }) => {
             .then(response => response.json())
             .then(data => {
                 if (data.ok) {
-                    setUser(data.nombre);
+                    setUser({ nombre:data.nombre, id:data.id });
+                    window.localStorage.setItem('token', data.token);
+                    setToken(data.token);
                     setIsLoggedIn(true);
                     setSubmitting(false);
                     console.log("Usuario autenticado: " , data);

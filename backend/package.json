@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +19,8 @@
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.4",
     "qs": "^6.12.3",
-    "react-router-dom": "^6.25.1"
+    "react-router-dom": "^6.25.1",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "prisma": "^5.17.0"

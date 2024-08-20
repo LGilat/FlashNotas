@@ -8,7 +8,7 @@ const Home = () => {
 
     return (
         <div className='home-container'>
-            <h1>Bienvenido {user}</h1>
+            <h1>Bienvenido {user ? user.nombre : 'anonimo'}</h1>
         </div>
     )
 }
