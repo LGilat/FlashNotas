@@ -2,6 +2,7 @@ import React, { useState, useEffect }  from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
+import '../css/forms.css';
 
 
 const UserSchema = Yup.object().shape({
@@ -18,38 +19,20 @@ const UserSchema = Yup.object().shape({
 });
 
 const styles = {
-    container: {
-        borderColor: 'blue',
-        padding: '10px',
-        margin: '5px'
-    },
-    formregister: {
-        marginTop: '12em',
-        textAlign: 'right',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        padding: '2em',
-    },
-    userdata: {
-        marginTop: '2em',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        padding: '2em',
-    },
     linkblock:{
         display: 'block',
-        margin: '10px',
+        margin: '10px 0',
         padding: '10px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
+        border: '1px solid rgba(204,0,0,0.25)',
+        borderRadius: '8px',
         textAlign: 'center',
         textDecoration: 'none',
-        color: 'blue',
-        backgroundColor: '#f0f0f0',
+        color: 'var(--primary-color)',
+        backgroundColor: '#fff1f1',
         transition: 'background-color 0.3s ease',
         cursor: 'pointer',
+        fontWeight: 600,
     }
-
 };
 
 
@@ -67,7 +50,9 @@ const AdminRole = () => {
 
     return (
         <>
-            <h1>Admin Role</h1>
+            <div className="form-page">
+            <h1 style={{ marginBottom: '10px' }}>Admin Role</h1>
+            <p className="form-subtitle">Asigna rol de administrador a un usuario.</p>
             { userAdmin && 
                 <div>
                     <a href="/categorias"  style={styles.linkblock}> Crear Categorias </a> 
@@ -77,7 +62,7 @@ const AdminRole = () => {
             }
 
             { !userAdmin &&(
-                <div style={styles.formregister}>
+                <div className="form-card">
                     <Formik
                         initialValues={{
                             nombre: '',
@@ -86,7 +71,7 @@ const AdminRole = () => {
                         }}
                         validationSchema={UserSchema}
                         onSubmit={(values, { setSubmitting }) => {
-                            fetch('http://localhost:3000/asignar-rol', {
+                            fetch(`${import.meta.env.VITE_API_URL}/asignar-rol`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -115,22 +100,25 @@ const AdminRole = () => {
                     >
                         {({ isSubmitting }) => (
                             <Form>
+                                <label className="form-label">Nombre</label>
                                 <div>
-                                    <Field type="text" name="nombre" placeholder="Nombre" className="input-textbox" />
+                                    <Field type="text" name="nombre" placeholder="Nombre" className="form-input" />
                                     <ErrorMessage name="nombre" component="div" />
                                 </div>
 
+                                <label className="form-label">Secret Key</label>
                                 <div>
-                                    <Field type="password" name="secretKey" placeholder="secretKey" className="input-textbox" />
+                                    <Field type="password" name="secretKey" placeholder="secretKey" className="form-input" />
                                     <ErrorMessage name="email" component="div" />
                                 </div>
 
+                                <label className="form-label">Password</label>
                                 <div>
-                                    <Field type="password" name="password" placeholder="Password" className="input-textbox" />
+                                    <Field type="password" name="password" placeholder="Password" className="form-input" />
                                     <ErrorMessage name="password" component="div" />
                                 </div>
 
-                                <button type="submit" disabled={isSubmitting}>
+                                <button type="submit" disabled={isSubmitting} className="form-button">
                                     Add Rol
                                 </button>
                             </Form>
@@ -141,6 +129,7 @@ const AdminRole = () => {
             
             )}
 
+            </div>
         </>
     )
 

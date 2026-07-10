@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Modal from '../components/Modals/MCategorias';
+import { SessionContext } from '../Context/SessionContext';
+import '../css/ui.css';
 
 const styles = {
     container: {
@@ -55,23 +57,29 @@ const styles = {
         width: '30%',
         margin: '10px',
         padding: '10px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
+        border: '1px solid rgba(204,0,0,0.25)',
+        borderRadius: '8px',
         textAlign: 'center',
         textDecoration: 'none',
-        color: 'blue',
-        backgroundColor: '#f0f0f0',
+        color: 'var(--primary-color)',
+        backgroundColor: '#fff1f1',
         transition: 'background-color 0.3s ease',
         cursor: 'pointer',
+        fontWeight: 600,
     },
     
 }
 
 const ListCategorias = () => {
     const [categorias, setCategorias] = useState([]);
-    const [userAdmin, setUserAdmin] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [categoriaToEdit, setCategoriaToEdit] = useState(null);
+    const { token, user, roles, isAdmin } = React.useContext(SessionContext);
+    const canEdit = isAdmin || (roles || []).includes('edit_own_categories');
+    const canDelete = isAdmin || (roles || []).includes('delete_own_categories');
+    const [message, setMessage] = useState({ type: '', text: '' });
+    const [sessionExpired, setSessionExpired] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleEditClick = (categoriaid) => {
         const categoria = categorias.find(categoria => categoria.id === categoriaid);
@@ -91,26 +99,70 @@ const ListCategorias = () => {
     }
     
     useEffect(() => {
-        const userAdmin = sessionStorage.getItem('adminData');
-        if ( userAdmin ) {
-            const userAdminData = JSON.parse(userAdmin);
-            setUserAdmin(userAdminData);
-        }
-        fetch('http://localhost:3000/categorias',{
+        if (!token) return;
+        fetch(`${import.meta.env.VITE_API_URL}/categorias`,{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             }
         })
             .then(response => response.json())
-            .then(data => setCategorias(data.categorias))
-            .catch(error => console.log(error));
-    }, []);
+            .then(data => setCategorias(data.categorias || []))
+            .catch(error => {
+                console.log(error);
+                setMessage({ type: 'error', text: 'No se pudieron cargar las categorías.' });
+            })
+            .finally(() => setIsLoading(false));
+    }, [token]);
+
+    const handleDeleteClick = (categoriaid) => {
+        if (!token) return;
+        fetch(`${import.meta.env.VITE_API_URL}/categorias/${categoriaid}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.mensaje === 'Token inválido' || data.mensaje === 'No autorizado') {
+                setSessionExpired(true);
+                return;
+            }
+            if (data.ok) {
+                setCategorias(categorias.filter(c => c.id !== categoriaid));
+                setMessage({ type: 'success', text: 'Categoría eliminada.' });
+            } else {
+                console.log('Error al eliminar categoria', data);
+                setMessage({ type: 'error', text: data.mensaje || 'Error al eliminar categoría.' });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            setMessage({ type: 'error', text: 'Error al eliminar categoría.' });
+        });
+    }
 
     return (
         <div style={styles.container}>
             <h1>ListCategorias</h1>
+            { !user && <p>Necesitas iniciar sesión para ver tus categorías.</p> }
+            {sessionExpired && (
+                <div style={{ marginTop: '10px', color: '#b00020' }}>
+                    Tu sesión expiró. Vuelve a iniciar sesión.
+                </div>
+            )}
+            {message.text && (
+                <div style={{ marginTop: '10px', color: message.type === 'error' ? '#b00020' : '#1b5e20' }}>
+                    {message.text}
+                </div>
+            )}
             <div style={styles.cardcontainer}>
+                {isLoading && [1,2,3,4,5,6].map(i => (
+                    <div key={i} style={styles.card} className="skeleton" />
+                ))}
                 {categorias.map(categoria =>  (
                     <div key={categoria.id} style={styles.card}>
                         <div style={styles.cardheader}>
@@ -121,14 +173,25 @@ const ListCategorias = () => {
                         </div>
                         <div style={styles.cardfooter}>
                             <span>Creado el: {new Date(categoria.fecha_creacion).toLocaleDateString()}</span>
-                            { userAdmin && userAdmin.rol === 'admin' && (
-                                <button  onClick={() => handleEditClick(categoria.id)} style={styles.linkblock}>
-                                    Editar
-                                </button>
-                            )}
+                            { user && (
+                                <>
+                                    {canEdit && (
+                                        <button  onClick={() => handleEditClick(categoria.id)} style={styles.linkblock}>
+                                            Editar
+                                        </button>
+                                    )}
+                                    {canDelete && (
+                                        <button  onClick={() => handleDeleteClick(categoria.id)} style={styles.linkblock}>
+                                            Eliminar
+                                        </button>
+                                    )}
+                                </>
+                            )}                            
                         </div>
                     </div>
                 ))}
+
+                {!isLoading && !categorias.length && <div className="empty-state">No hay categorías aún.</div>}
 
                 {isModalOpen && (
                 <Modal
@@ -136,6 +199,7 @@ const ListCategorias = () => {
                     onClose={() => setIsModalOpen(false)}
                     categoriaToEdit={categoriaToEdit}
                     onUpdatedCategoria={onUpdatedCategoria}
+                    token={token}
                 />
             )}
             </div>
@@ -144,4 +208,3 @@ const ListCategorias = () => {
 };
 
 export default ListCategorias;
-

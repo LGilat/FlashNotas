@@ -1,0 +1,122 @@
+/* /src/css/auth.css */
+
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background-color: #f9fafb; /* Consistent light background */
+    margin-top: -3rem;
+}
+
+.auth-container {
+    max-width: 450px;
+    width: 100%;
+    padding: 3rem;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 5px 10px rgba(0, 0, 0, 0.04);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    font-size: 2rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: #6b7280;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.input-textbox {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-textbox:focus {
+    outline: none;
+    border-color: var(--primary-color, #cc0000);
+    box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.general-error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: var(--main-color, #cc0000); /* Fallback color */
+    color: white;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.auth-btn:hover:not(:disabled) {
+    background-color: #990000;
+    transform: translateY(-2px);
+}
+
+.auth-btn:disabled {
+    background-color: #fca5a5;
+    cursor: not-allowed;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #6b7280;
+}
+
+.auth-footer a {
+    color: var(--main-color, #cc0000);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Success Message Styles */
+.auth-success-message {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #374151;
+}

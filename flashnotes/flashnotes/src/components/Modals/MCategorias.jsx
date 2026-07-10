@@ -8,14 +8,14 @@ const styles  = {
         padding: '10px',
         margin: '5px',
         borderRadius: '4px',
-        border: '1px solid #ccc',
+        border: '1px solid #cbd5e1',
     },
 
     textArea: {
         padding: '10px',
         margin: '5px',
         borderRadius: '4px',
-        border: '1px solid #ccc',
+        border: '1px solid #cbd5e1',
         height: '100px',
     },
 
@@ -23,7 +23,7 @@ const styles  = {
         padding: '10px 20px',
         width: '140px',
         marginRight: '0 auto',
-        backgroundColor: '#007bff',
+        backgroundColor: 'var(--primary-color)',
         color: 'white',
         border: 'none',
         borderRadius: '4px',
@@ -31,9 +31,12 @@ const styles  = {
     }
 }
 
-const ModalCategoria = ({ isOpen, onClose, categoriaToEdit, onUpdatedCategoria }) => {
-
+const ModalCategoria = ({ isOpen, onClose, categoriaToEdit, onUpdatedCategoria, token }) => {
     const [editedCategoria, setEditedCategoria] = useState(categoriaToEdit);
+
+    useEffect(() => {
+        setEditedCategoria(categoriaToEdit);
+    }, [categoriaToEdit]);
 
     const handleChange = (event) => {
         setEditedCategoria({
@@ -45,10 +48,11 @@ const ModalCategoria = ({ isOpen, onClose, categoriaToEdit, onUpdatedCategoria }
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        fetch(`http://localhost:3000/categorias/${categoriaToEdit.id}`, {
+        fetch(`${import.meta.env.VITE_API_URL}/categorias/${categoriaToEdit.id}`, {
             method: 'PATCH',
             headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(editedCategoria), // Enviamos los datos actualizados
         })
@@ -65,6 +69,10 @@ const ModalCategoria = ({ isOpen, onClose, categoriaToEdit, onUpdatedCategoria }
         })
         .catch(error => console.error(error));
     };
+    if (!editedCategoria) {
+        return null;
+    }
+
     return (
         <ReactModal
             isOpen={isOpen}

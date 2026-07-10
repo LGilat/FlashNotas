@@ -18,10 +18,15 @@ model Usuario {
   nombre    String  @unique
   email     String  @unique
   password  String
+  avatarUrl String?
+  tokenVersion Int @default(0)
   fecha_registro DateTime
   notas          Nota[]
   categorias     Categoria[]
   roles          RolUsuario[]
+  roleRequests   RoleRequest[]
+  sessions       Session[]
+  emailChangeRequests EmailChangeRequest[]
 
 }
 
@@ -55,6 +60,9 @@ model Nota {
   id        Int      @id @default(autoincrement())
   titulo    String
   contenido String
+  tags      String?  // comma-separated
+  pinned    Boolean  @default(false)
+  favorite  Boolean  @default(false)
   categoria   Categoria  @relation(fields: [categoriaId], references: [id])
   categoriaId Int
   usuario   Usuario  @relation(fields: [usuarioId], references: [id]) 
@@ -62,4 +70,50 @@ model Nota {
   fecha_creacion DateTime
   fecha_ultima_modificacion DateTime
 
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  action      String
+  entity      String
+  entityId    Int?
+  actorUserId Int?
+  actorRole   String?
+  details     String?
+  createdAt   DateTime @default(now())
+}
+
+model RoleRequest {
+  id           Int      @id @default(autoincrement())
+  role         String
+  status       String   // pending | approved | rejected
+  reason       String?
+  createdAt    DateTime @default(now())
+  decidedAt    DateTime?
+  decidedById  Int?
+  usuarioId    Int
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Session {
+  id         Int      @id @default(autoincrement())
+  tokenId    String   @unique
+  usuarioId  Int
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+  lastSeen   DateTime @default(now())
+  revokedAt  DateTime?
+}
+
+model EmailChangeRequest {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  newEmail  String
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  usedAt    DateTime?
 }
